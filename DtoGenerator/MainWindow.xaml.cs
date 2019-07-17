@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using DtoGenerator.Annotations;
 using DtoGenerator.Properties;
 using MahApps.Metro.Controls;
 
@@ -23,12 +26,23 @@ namespace DtoGenerator
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
 
         public string ConnectionString { get; set; }
         public string SqlQuery { get; set; }
-        public string Output { get; set; }
+        private string _output;
+
+        public string Output
+        {
+            get => _output;
+            set
+            {
+                if (value == _output) return;
+                _output = value;
+                OnPropertyChanged();
+            }
+        }
 
         public MainWindow()
         {
@@ -71,6 +85,14 @@ namespace DtoGenerator
                 // do nothing
             }
             
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
